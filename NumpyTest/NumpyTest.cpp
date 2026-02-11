@@ -1,6 +1,5 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
-#include <pybind11/stl.h>
 #include <locale.h>
 
 #define STRINGIFY(x) #x
@@ -20,7 +19,7 @@ PYBIND11_MODULE(NumpyAdder, m, py::mod_gil_not_used()) {
         Pybind11 example plugin
         -----------------------
 
-        .. currentmodule:: bindTest
+        .. currentmodule:: NumpyAdder
 
         .. autosummary::
            :toctree: _generate
@@ -33,7 +32,7 @@ PYBIND11_MODULE(NumpyAdder, m, py::mod_gil_not_used()) {
     py::class_<NumpyClassTest>(m, "NumpyClassTest")
         .def(py::init<int, int>(),
             py::arg("n"), py::arg("m"))
-        .def(py::init< py::array_t< int > >(),
+        .def(py::init<py::array_t<int>>(),
             py::arg("arr"))
 
         .def_property_readonly("n", &NumpyClassTest::getRows)

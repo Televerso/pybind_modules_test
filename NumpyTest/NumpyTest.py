@@ -42,15 +42,25 @@ def test():
         [2, 1, 1, 1, 1, 0],
     ])
 
-    mat_eye = -np.eye(5)
+    mat_eye = np.eye(5)
 
-    buffer = na.NumpyClassTest(6, 5)
+    print("Проверка модуля NumpyTest : работа с массивами numpy")
+
+    buffer = na.NumpyClassTest(6, 5) # Помним, что в нашей структуре данных массив numpy хранится как одно из полей
+    print("Матрица 6х5, заполненный нулями:")
     print(buffer.Data)
+    print("Проверка сложения матриц")
     print(buffer.add(image_start))
+    print("Проверка вычитания матриц")
     print(buffer.sub(image_heart))
+    print("Проверка умножения матрицы на скаляр")
     print(buffer.mul(10))
+    print("Проверка деления матрицы на скаляр")
     print(buffer.div(10))
+    print("Проверка умножения на единичную матрицу")
     print(buffer.matMul(mat_eye))
-
+    print("Проверка умножения на столбец")
+    print(buffer.matMul(mat_column))
+    print()
     return buffer
 

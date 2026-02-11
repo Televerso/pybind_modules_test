@@ -1,10 +1,11 @@
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <pybind11/stl.h> // НЕОБХОДИМАЯ строчка для того, чтобы pybind смог работать с векторами; работает автоматически
 #include <locale.h>
 
 #define STRINGIFY(x) #x
 #define MACRO_STRINGIFY(x) STRINGIFY(x)
 
+// Не забываем подключить наш код
 #include "ClassTest.h"
 
 
@@ -18,7 +19,7 @@ PYBIND11_MODULE(ClassTest, m, py::mod_gil_not_used()) {
         Pybind11 example plugin
         -----------------------
 
-        .. currentmodule:: bindTest
+        .. currentmodule:: ClassTest
 
         .. autosummary::
            :toctree: _generate
@@ -26,11 +27,21 @@ PYBIND11_MODULE(ClassTest, m, py::mod_gil_not_used()) {
            ClassTest
     )pbdoc";
 
-    // Название и ссылка на функцию
+    // Классы подключаются по другому - с ними сложнее.
+    //
+    // Самое сложное - это конструкторы, к ним необходимо указывать не только названия аргументов, но и их тип.
+    // Здесь 2 конструктора - один с типами int, int; второй с 2d вектором (вектор векторов) типа int - все это нужно прописать.
+    //
+    // Дальше указываеются методы и поля класса. Методы указываются также как и функции, нужно только указывать что они принадлежат этому классу.
+    // Поля можно оформить через сеттеры и геттеры как функции, а можно сделать как тут - используя специальый синтаксис и ссылку на геттер,
+    // открыть к ним достум в стиле python.
+
+    // Название и ссылка на класс
     py::class_<ClassTest>(m, "ClassTest")
+
         .def(py::init<int, int>(),
             py::arg("n"), py::arg("m"))
-        .def(py::init<std::vector<std::vector<int>>&>(),
+        .def(py::init<std::vector<std::vector<int>>>(),
             py::arg("v"))
 
         .def_property_readonly("n", &ClassTest::getRows)

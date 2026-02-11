@@ -4,7 +4,8 @@
 #define STRINGIFY(x) #x
 #define MACRO_STRINGIFY(x) STRINGIFY(x)
 
-int sub(int a, int b) {
+// Тут в качестве примера устанавливаем значения по умолчанию
+int sub(int a = 20, int b = 2) {
     return a-b;
 }
 
@@ -18,7 +19,7 @@ PYBIND11_MODULE(subTest, m, py::mod_gil_not_used()) {
         Pybind11 example plugin
         -----------------------
 
-        .. currentmodule:: bindTest
+        .. currentmodule:: subTest
 
         .. autosummary::
            :toctree: _generate
@@ -26,11 +27,12 @@ PYBIND11_MODULE(subTest, m, py::mod_gil_not_used()) {
            sub
     )pbdoc";
 
+    // Тогда и тут их тоже надо указать
     // Название и ссылка на функцию
     m.def("sub", &sub, R"pbdoc(
         Subtracts
 
-    )pbdoc", py::arg("a"), py::arg("b"));
+    )pbdoc", py::arg("a") = 20, py::arg("b") = 2);
 
 #ifdef VERSION_INFO
     m.attr("__version__") = MACRO_STRINGIFY(VERSION_INFO);

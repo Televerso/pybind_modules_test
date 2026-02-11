@@ -1,42 +1,59 @@
 #include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
+#include <pybind11/numpy.h> // Вот тут
 
 namespace py = pybind11;
 
+// .h файл с кодом на c++
+// Поскольку тутвведется работа с массивами numpy, подключает соответствующую библиотеку ^
 class NumpyClassTest
 {
 private:
-	py::array_t<int> Data;
+	py::array_t<int> Data; // Массив numpy живет тут
 	size_t n;
 	size_t m;
 
+// И тут нужно небольшое отступление...
+
+/* Дело в том, что массивы numpy хранятся не совсем как обычные массивы. При обращении к массиву мы на самом деле
+обращаемся к "буферу" (скорее заголовку/оглавлению, но он зовется буфером. Он содержит:
+- Размерность массива (его измерения),
+- Размер массива (число элементов),
+- Минимальное и максимальное значение,
+- Тип данных,
+- И указатель на структуру, содержащую наши данные (причем в этих данных могут быть пробелы (strides - шаги) и разная
+ адресация (c или Fortran), и это тоже нужно учитывать).
+*/
 	
 public:
 	NumpyClassTest(int n, int m)
 	{
-		py::array_t<int> d(n * m);
-		int* ptr = (int*)d.request().ptr;
+		py::array_t<int> d(n * m); // Создаем массив с размером n*m
+		int* ptr = (int*)d.request().ptr; // Получаем буфер командой request() и достаем из него указатель на массив .ptr
 
+        // Заполняем массив нулями
 		for (size_t i = 0; i < n*m; ++i)
 		{
 			ptr[i] = 0;
 		}
 
+        // Устанавливаем размерность
 		d.resize({ n,m });
+		// Сохраняем в поля класса
 		this->Data = d;
 		this->n = n;
 		this->m = m;
 	}
 
-	NumpyClassTest(py::array_t<int, py::array::c_style | py::array::forcecast > arr)
+    // Поскольку в массиве могут быть пробелы или структура, при получении нового массива в функцию (метод) указываем
+    // стиль адресации (c_style или f_style) и приводим массив к сплошным значениям
+	NumpyClassTest(py::array_t<int, py::array::c_style | py::array::forcecast> arr)
 	{
-		py::buffer_info buf = arr.request();
-		this->Data = py::array_t<int>(buf);
-		this->n = buf.shape[0];
+		py::buffer_info buf = arr.request(); // Считываем буфер
+		this->Data = py::array_t<int>(buf); // Массив можно копировать по буферу
+		this->n = buf.shape[0]; // Размерности
 		this->m = buf.shape[1];
 	}
 
-	
 
 	size_t getRows()
 	{
